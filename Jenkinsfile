@@ -53,7 +53,7 @@ pipeline {
         stage('Deploy to Server') {
             steps {
                 sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                    sh 'ssh -o StrictHostKeyChecking=no user@your-server-ip "bash deploy.sh"'
+                    sh 'ssh -o StrictHostKeyChecking=no user@192.168.1.12 "bash deploy.sh"'
                 }
             }
         }
