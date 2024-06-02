@@ -6,7 +6,7 @@ pipeline {
         SSH_CREDENTIALS_ID = 'remote-ssh-key'
         GIT_REPO_URL = 'git@github.com:tanvi99-b/devops-build.git'
         DOCKER_DEV_REPO = 'tanvidocker99/dev'
-        DOCKER_POD_REPO = 'tanvidocker99/pod'
+        DOCKER_PROD_REPO = 'tanvidocker99/prod'
     }
 
     stages {
@@ -15,7 +15,7 @@ pipeline {
                 git branch: env.BRANCH_NAME, credentialsId: SSH_CREDENTIALS_ID, url: GIT_REPO_URL
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -37,14 +37,14 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image to Pod Repo') {
+        stage('Push Docker Image to Prod Repo') {
             when {
                 branch 'main'
             }
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                        dockerImage.push("${env.BRANCH_NAME}")
+                        dockerImage.push("${DOCKER_PROD_REPO}:${env.BRANCH_NAME}")
                     }
                 }
             }
