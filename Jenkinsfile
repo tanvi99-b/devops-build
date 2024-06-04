@@ -2,21 +2,24 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('1ebcdca2-35e5-4eb2-819c-5fa5743d84a5')
-        SSH_CREDENTIALS = credentials('server-ssh-key')
+        DOCKER_CREDENTIALS_ID = '1ebcdca2-35e5-4eb2-819c-5fa5743d84a5'
+        DOCKER_IMAGE = 'tanvidocker99/reactapp'
+        SSH_CREDENTIALS_ID = 'server-ssh-key'
+        SERVER_IP = '192.168.1.12'
+        CONTAINER_NAME = 'container1'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git 'https://github.com/tanvi99-b/devops-build.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("myapp:${env.BUILD_ID}")
+                    docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
                 }
             }
         }
@@ -24,27 +27,50 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS) {
-                        docker.image("myapp:${env.BUILD_ID}").push('latest')
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
+                        docker.image("${DOCKER_IMAGE}:${env.BUILD_ID}").push()
+                        docker.image("${DOCKER_IMAGE}:${env.BUILD_ID}").push('latest')
                     }
                 }
             }
         }
 
         stage('Deploy to Server') {
+            when {
+                branch 'main'
+            }
             steps {
-                sshagent([SSH_CREDENTIALS]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no tester1@192.168.1.12 'docker pull myapp:latest && docker run -d -p 80:80 myapp:latest'
-                    """
+                script {
+                    sshagent([SSH_CREDENTIALS_ID]) {
+                        sh """
+                        ssh -o StrictHostKeyChecking=no tester1@${SERVER_IP} '
+                            docker pull ${DOCKER_IMAGE}:latest && 
+                            docker stop ${CONTAINER_NAME} || true && 
+                            docker rm ${CONTAINER_NAME} || true && 
+                            docker run -d --name ${CONTAINER_NAME} -p 80:3000 ${DOCKER_IMAGE}:latest'
+                        """
+                    }
                 }
             }
         }
-    }
 
-    post {
-        always {
-            cleanWs()
+        stage('Deploy to Dev Server') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                script {
+                    sshagent([SSH_CREDENTIALS_ID]) {
+                        sh """
+                        ssh -o StrictHostKeyChecking=no tester1@${SERVER_IP} '
+                            docker pull ${DOCKER_IMAGE}:latest && 
+                            docker stop ${CONTAINER_NAME}-dev || true && 
+                            docker rm ${CONTAINER_NAME}-dev || true && 
+                            docker run -d --name ${CONTAINER_NAME}-dev -p 3001:3000 ${DOCKER_IMAGE}:latest'
+                        """
+                    }
+                }
+            }
         }
     }
 }
