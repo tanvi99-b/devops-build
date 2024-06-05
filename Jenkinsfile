@@ -5,7 +5,7 @@ pipeline {
         DOCKER_CREDENTIALS_ID = '1ebcdca2-35e5-4eb2-819c-5fa5743d84a5'
         DOCKER_IMAGE = 'tanvidocker99/reactapp'
         SSH_CREDENTIALS_ID = 'server-ssh-key'
-        SERVER_IP = '192.168.1.12'
+        SERVER_IP = '192.168.1.6'
         CONTAINER_NAME = 'container1'
     }
 
