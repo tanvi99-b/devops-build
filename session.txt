@@ -1,6 +1,0 @@
-Script started on 2024-06-03 15:46:57+00:00 [TERM="xterm" TTY="/dev/pts/2" COLUMNS="126" LINES="33"]
-[?2004h]0;root@tanvi: /home/devopsbuild/devops-buildroot@tanvi:/home/devopsbuild/devops-build# [7mexit[27m
-[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cexit
-[?2004lexit
-
-Script done on 2024-06-03 15:47:20+00:00 [COMMAND_EXIT_CODE="0"]
