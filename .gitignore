@@ -1,9 +1,0 @@
-# Ignore node_modules directory
-node_modules
-# Ignore log files
-*.log
-# Ignore build directories
-build
-dist
-# Ignore Docker-related files
-image.tar
