@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  jenkins:
+    image: jenkins/jenkins
+    ports:
+      - "8080:8080"  # Jenkins on host port 8080
+    restart: unless-stopped
+
+  web:
+    image: my-react-app
+    ports:
+      - "80:80"  # React application on host port 80
+    restart: unless-stopped
+
