@@ -3,7 +3,7 @@
 # Define variables
 KEY_PATH="/home/ubuntu/Keypair01.pem"
 USER="ubuntu"
-SERVER_IP="18.206.176.36"
+SERVER_IP="52.87.186.167"
 PROJECT_DIR="/home/devops-build"
 
 # SSH into the server and run the Docker Compose commands
