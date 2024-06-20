@@ -1,28 +1,30 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('dockerhub')
+        IMAGE_NAME = 'tanvidocker99/dev:dev'
+    }
     stages {
         stage('Checkout') {
             steps {
-                // Checkout code from the specified branch
-                git url: 'https://github.com/tanvi99-b/devops-build.git', branch: env.BRANCH_NAME
+                // Checkout code from the branch that triggered the build
+                checkout scm
             }
         }
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Building...'
-                // Add your build steps here
+                script {
+                    sh 'docker build -t $IMAGE_NAME .'
+                }
             }
         }
-        stage('Test') {
+        stage('Push Docker Image') {
             steps {
-                echo 'Testing...'
-                // Add your test steps here
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying...'
-                // Add your deploy steps here
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS) {
+                        sh 'docker push $IMAGE_NAME'
+                    }
+                }
             }
         }
     }
@@ -33,3 +35,4 @@ pipeline {
         }
     }
 }
+
